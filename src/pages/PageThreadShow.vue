@@ -3,6 +3,21 @@
       <h1>{{thread.title}}</h1>
 
       <PostList :posts="posts" />
+
+      <form @submit.prevent="addPost">
+        <div class="form-group">
+          <textarea 
+            cols="30" 
+            rows="10" 
+            class="form-input"
+            v-model="postListText"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-blue">Submit post</button>
+        </div>
+      </form>
     </div>
 </template>
 
@@ -22,7 +37,8 @@ export default {
   },
   data () {
     return {
-      thread: sourceData.threads[this.id]
+      thread: sourceData.threads[this.id],
+      postListText: ''
     }
   },
   computed: {
@@ -31,6 +47,27 @@ export default {
 
       return Object.values(sourceData.posts)
         .filter(post => postIds.includes(post['.key']))
+    }
+  },
+  methods: {
+    addPost () {
+      let postId = `greatPost${Math.random()}`
+
+      let post = {
+        text: this.postListText,
+        publishedAt: Math.floor(Date.now() / 1000),
+        threadId: this.id,
+        userId: '7uVPJS9GHoftN58Z2MXCYDqmNAh2',
+        '.key': postId
+      }
+
+      this.$set(sourceData.posts, postId, post)
+      this.$set(this.thread.posts, postId, postId)
+      this.$set(sourceData.users[post.userId].posts, postId, postId)
+
+      console.log('here')
+
+      this.postListText = ''
     }
   }
 }
